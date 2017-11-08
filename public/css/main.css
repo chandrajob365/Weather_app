@@ -1,0 +1,79 @@
+*{
+  margin: 0px;
+  padding: 0px;
+  box-sizing: border-box;
+}
+body{
+  display: flex;
+  flex-flow: column;
+}
+header{
+  background-color: #3F51B5;
+  max-height: 10%;
+  width: 100%;
+}
+nav {
+  display: flex;
+  justify-content: space-between;
+}
+.home{
+  color: White;
+  padding: 5px;
+  align-self: baseline;
+  font-size: 32px;
+}
+.links{
+  padding: 5px;
+  align-self: baseline;
+}
+input[type='button'] {
+    color: white;
+    margin: 2px;
+    padding: 4px 4px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 20px;
+    border-radius: 5px;
+}
+
+.button-OK {
+  background-color: #5cb85c;
+}
+
+.button-Cancel {
+  background-color: #d9534f;
+}
+main {
+  display: flex;
+}
+.loader {
+  margin: auto;
+  margin-top: 30%;
+  border: 16px solid #2196f3;
+  border-top: 16px solid white;
+  border-bottom: 16px solid white;
+  border-radius: 100%;
+  width: 80px;
+  height: 80px;
+  animation: spin 2s linear infinite
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+a {
+ color: White;
+ font-weight: bold;
+ text-decoration-line: none;
+}
+a:visited {
+  color: blue;
+}
+a:hover,
+a:active,
+a:focus {
+  color: black;
+  text-decoration: none;
+}
