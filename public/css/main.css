@@ -26,22 +26,14 @@ nav {
   padding: 5px;
   align-self: baseline;
 }
-input[type='button'] {
-    color: white;
-    margin: 2px;
-    padding: 4px 4px;
-    text-align: center;
-    text-decoration: none;
-    font-size: 20px;
-    border-radius: 5px;
+.fa-white {
+  color: white;
 }
-
-.button-OK {
-  background-color: #5cb85c;
+.refresh{
+  padding: 5px;
 }
-
-.button-Cancel {
-  background-color: #d9534f;
+.addLoc{
+  padding: 5px;
 }
 main {
   display: flex;
@@ -62,18 +54,40 @@ main {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
-
-a {
- color: White;
- font-weight: bold;
- text-decoration-line: none;
+.main{
+  flex:1;
+  padding-top: 60px;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
-a:visited {
-  color: blue;
+.card{
+  padding: 16px;
+  box-sizing: border-box;
+  background: #fff;
+  border-radius: 2px;
+  position: relative;
+  margin: 3% auto;
+  width: 50%;
+  height: 40%;
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12); }
 }
-a:hover,
-a:active,
-a:focus {
-  color: black;
-  text-decoration: none;
+.weather .location {
+  font-size: 1.75em;
+}
+.weather .date , .weather .description {
+  font-size: 1.25em;
+}
+.weather .current {
+  display: flex;
+}
+.weather .current .icon{
+  width: 128px;
+  height: 128px;
+}
+.weather .current .visual {
+  display: flex;
+  font-size: 4em;
+}
+.weather .current .visual, .weather .current .description {
+  flex-grow: 1;
 }

@@ -3,6 +3,7 @@
     <title> Weather App </title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel='stylesheet' type='text/css' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css'>
     <link rel='stylesheet' type='text/css' href='./css/main.css'>
   </head>
   <body>
@@ -12,13 +13,42 @@
           <span> Weather App </span>
         </div>
         <div class='links'>
-          <input type='button' name='refresh' id='refresh' value='Refresh' />
-          <input type='button' name='addLocation' id='addLocation' value='Add Loaction' />
+          <a href='#'>
+            <i class="fa fa-refresh fa-white refresh" aria-hidden="true"></i>
+          </a>
+          <a href='#'>
+            <i class="fa fa-plus fa-white addLoc" aria-hidden="true"></i>
+          </a>
        </div>
       </nav>
     </header>
-    <main>
-      <div class="loader">
+
+    <main class='main'>
+      <div class="card card-template weather">
+        <div class='location'></div>
+        <div class='date'></div>
+        <div class='description'></div>
+        <div class='current'>
+          <div class='visual'>
+            <div class='icon'></div>
+            <div class='temprature'>
+              <span class="value"></span><span class="scale">°F</span>
+            </div>
+          </div>
+          <div class="description">
+          <div class="humidity"></div>
+          <div class="wind">
+            <span class="value"></span>
+            <span class="scale">mph</span>
+            <span class="direction"></span>°
+          </div>
+          <div class="sunrise"></div>
+          <div class="sunset"></div>
+        </div>
+        </div>
+
+      </div>
+      <div class="loader" hidden>
       </div>
     </main>
   </body>
