@@ -1,54 +1,147 @@
 <html>
   <head>
-    <title> Weather App </title>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel='stylesheet' type='text/css' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css'>
+    <title> Weather APP </title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content='IE=edge'>
+    <meta name='viewport' content="width=device-width, initial-scale=1.0">
     <link rel='stylesheet' type='text/css' href='./css/main.css'>
   </head>
   <body>
-    <header>
-      <nav>
-        <div class='home'>
-          <span> Weather App </span>
-        </div>
-        <div class='links'>
-          <a href='#'>
-            <i class="fa fa-refresh fa-white refresh" aria-hidden="true"></i>
-          </a>
-          <a href='#'>
-            <i class="fa fa-plus fa-white addLoc" aria-hidden="true"></i>
-          </a>
-       </div>
-      </nav>
+    <header class='headLine'>
+      <div class='app'>
+        <span class='value'>Weather App</span>
+      </div>
+      <div class='btn'>
+        <button class='refreshBtn'></button>
+        <button class='addLocBtn'></button>
+      </div>
     </header>
-
     <main class='main'>
-      <div class="card card-template weather">
-        <div class='location'></div>
-        <div class='date'></div>
-        <div class='description'></div>
+      <div class='card weather'>
+        <div class='place'>
+          <div class='location'>Bangalore</div>
+          <div class='date'>Thrusday</div>
+        </div>
         <div class='current'>
           <div class='visual'>
-            <div class='icon'></div>
-            <div class='temprature'>
-              <span class="value"></span><span class="scale">°F</span>
+            <div class='nature'>Windy</div>
+            <div class='description'>
+              <div class='icon'></div>
+              <div class='temprature'>
+                <span class='value'>56</span>
+                <span class='scale'>°F</span>
+              </div>
             </div>
           </div>
-          <div class="description">
-          <div class="humidity"></div>
-          <div class="wind">
-            <span class="value"></span>
-            <span class="scale">mph</span>
-            <span class="direction"></span>°
+          <div class='stats'>
+            <div class='humidity'>55</div>
+            <div class='wind'>
+              <span class='value'>40</span>
+              <span class='scale'>mps</span>
+              <span class='direction'>NE</span>
+            </div>
+            <div class='precipitation'>
+              <span class='value'>20</span>
+              <span class='scale'>mm</span>
+            </div>
+            <div class='sunrise'>06:00</div>
+            <div class='sunset'>17:30</div>
           </div>
-          <div class="sunrise"></div>
-          <div class="sunset"></div>
-        </div>
         </div>
 
-      </div>
-      <div class="loader" hidden>
+        <div class='forecast'>
+
+          <div class='oneDay'>
+            <div class='date'></div>
+            <div class='icon'></div>
+            <div class='temp'>
+              <div class='temp-max'>
+                <span class='value'></span>
+                <span class='scale'>1°F</span>
+              </div>
+              <div class='temp-min'>
+                <span class='value'></span>
+                <span class='scale'>2°F</span>
+              </div>
+            </div>
+          </div>
+
+          <div class='oneDay'>
+            <div class='date'></div>
+            <div class='icon'></div>
+            <div class='temp'>
+              <div class='temp-max'>
+                <span class='value'></span>
+                <span class='scale'>3°F</span>
+              </div>
+              <div class='temp-min'>
+                <span class='value'></span>
+                <span class='scale'>4°F</span>
+              </div>
+            </div>
+          </div>
+
+          <div class='oneDay'>
+            <div class='date'></div>
+            <div class='icon'></div>
+            <div class='temp'>
+              <div class='temp-max'>
+                <span class='value'></span>
+                <span class='scale'>°F</span>
+              </div>
+              <div class='temp-min'>
+                <span class='value'></span>
+                <span class='scale'>°F</span>
+              </div>
+            </div>
+          </div>
+
+          <div class='oneDay'>
+            <div class='date'></div>
+            <div class='icon'></div>
+            <div class='temp'>
+              <div class='temp-max'>
+                <span class='value'></span>
+                <span class='scale'>°F</span>
+              </div>
+              <div class='temp-min'>
+                <span class='value'></span>
+                <span class='scale'>°F</span>
+              </div>
+            </div>
+          </div>
+
+          <div class='oneDay'>
+            <div class='date'></div>
+            <div class='icon'></div>
+            <div class='temp'>
+              <div class='temp-max'>
+                <span class='value'></span>
+                <span class='scale'>°F</span>
+              </div>
+              <div class='temp-min'>
+                <span class='value'></span>
+                <span class='scale'>°F</span>
+              </div>
+            </div>
+          </div>
+
+          <div class='oneDay'>
+            <div class='date'></div>
+            <div class='icon'></div>
+            <div class='temp'>
+              <div class='temp-max'>
+                <span class='value'></span>
+                <span class='scale'>°F</span>
+              </div>
+              <div class='temp-min'>
+                <span class='value'></span>
+                <span class='scale'>°F</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
       </div>
     </main>
   </body>
