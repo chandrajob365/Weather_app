@@ -22,21 +22,42 @@ font-size: 2rem;
   justify-content: space-around;
 }
 .refreshBtn {
-  background: url(/images/ic_refresh_white_24px.svg) center center no-repeat;
+  background: url("/images/ic_refresh_white_24px.svg") center center no-repeat;
   background-size: cover;
   width: 32px;
   height: 32px;
   border: none;
   cursor: pointer;
 }
+input[type='text'] {
+    padding: 3px 5px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px
+}
+input[type='button'] {
+    color: white;
+    margin: 2px;
+    padding: 4px 4px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 10px;
+    border-radius: 5px;
+}
 .addLocBtn {
   margin-left: 16px;
-  background: url(/images/ic_add_white_24px.svg) center center no-repeat;
+  background: url("/images/ic_add_white_24px.svg") center center no-repeat;
   background-size: cover;
   width: 32px;
   height: 32px;
   border: none;
   cursor: pointer;
+}
+.main {
+  display: flex;
+  flex-flow: column;
+  align-items: center;
 }
 .place {
   display: flex;
@@ -71,7 +92,7 @@ font-size: 2rem;
   justify-content: space-around;
 }
 .description .icon {
-  background: url(/images/wind_black.png) center center no-repeat;
+  background: center center no-repeat;
   background-size: cover;
 }
 .description .icon.clear-day {

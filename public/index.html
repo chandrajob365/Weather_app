@@ -13,39 +13,42 @@
       </div>
       <div class='btn'>
         <button class='refreshBtn'></button>
-        <button class='addLocBtn'></button>
       </div>
     </header>
     <main class='main'>
-      <div class='card weather' hidden>
+      <div class='InputBtnGrp'>
+        <input type='text' id='newLoc'>
+        <input type='button' value='Get' onClick='fetchData()'></button>
+      </div>
+      <div class='weather'>
         <div class='place'>
-          <div class='location'>Bangalore</div>
-          <div class='date'>Thrusday</div>
+          <div class='location'></div>
+          <div class='date'></div>
         </div>
         <div class='current'>
           <div class='visual'>
-            <div class='nature'>Windy</div>
+            <div class='nature'></div>
             <div class='description'>
               <div class='icon'></div>
               <div class='temprature'>
-                <span class='value'>56</span>
-                <span class='scale'>°F</span>
+                <span class='value'></span>
+                <span class='scale'></span>
               </div>
             </div>
           </div>
           <div class='stats'>
-            <div class='humidity'>55</div>
+            <div class='humidity'></div>
             <div class='wind'>
-              <span class='value'>40</span>
+              <span class='value'></span>
               <span class='scale'>mps</span>
-              <span class='direction'>NE</span>
+              <span class='direction'></span>
             </div>
-            <div class='precipitation'>
-              <span class='value'>20</span>
+            <!-- <div class='rain'>
+              <span class='value'></span>
               <span class='scale'>mm</span>
-            </div>
-            <div class='sunrise'>06:00</div>
-            <div class='sunset'>17:30</div>
+            </div> -->
+            <div class='sunrise'></div>
+            <div class='sunset'></div>
           </div>
         </div>
 
@@ -143,12 +146,11 @@
 
         </div>
       </div>
-
       </div>
-        <div class="loader" >
-      </div>
-
     </main>
+
+    <div class="loader"></div>
+
     <script src='./script/main.js'></script>
   </body>
 </html>
