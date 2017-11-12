@@ -1,5 +1,12 @@
 const APPKEY = '6d0e3f929541145218c53f14a59c7aa2'
-
+const GPLACEAPPKEY = 'AIzaSyAWc4-9-Dy6nJ_1hDUcQjX1_ZxhwzIsVw4'
+const app = {
+  availableCards: {},
+  container: document.querySelector('.main'),
+  weatherTemplate: document.querySelector('.weatherTemplate'),
+  isLoading: true,
+  spinner: document.querySelector('.app-loader')
+}
 const initialWeatherForecast = {
   name: 'Bangalore',
   dt: 1510291800,
@@ -12,7 +19,7 @@ const initialWeatherForecast = {
   wind: {
     speed: 30,
     scale: 'mps',
-    deg: '43°'
+    deg: '43'
   },
   sys: {
     country: 'IN',
@@ -52,11 +59,30 @@ const getIconClass = weatherId => {
   if (/80[1-4]/.test(weatherId)) return 'cloudy'
 }
 
-const populateUpdatedData = (data, location) => {
+const populateUpdatedData = (data) => {
   console.log('dataLastUpdated = ', getFormatedDate(data.dt)('lastUpdated'), ' data.dt = ', data.dt)
+  let dataLastUpdated = data.dt
+  let card = app.availableCards[data.name]
+  if (!card) {
+    card = app.weatherTemplate.cloneNode(true)
+    // card.classList.remove('weatherTemplate')
+    card.querySelector('.location').textContent = data.name + ' , ' + data.sys.country
+    card.removeAttribute('hidden')
+    app.container.appendChild(card)
+    app.availableCards[data.name] = card
+  }
+  // Verifies the data provide is newer than what's already visible
+  // on the card, if it's not bail, if it is, continue and update the
+  // time saved in the card
+  let cardLastUpdatedElem = card.querySelector('.card-last-updated')
+  let cardLastUpdated = cardLastUpdatedElem.textContent
+  if (cardLastUpdated) {
+    if (dataLastUpdated < cardLastUpdated) return
+  }
+  cardLastUpdatedElem.textContent = data.dt
   let currentLocation = data.name
   let countryCode = data.sys.country
-  let dataLastUpdated = getFormatedDate(data.dt)('lastUpdated')
+  let dataLastUpdatedFormated = getFormatedDate(data.dt)('lastUpdated')
   let currentWeatherNature = data.weather[0].main
   let currentWeatherId = data.weather[0].id
   let currentTempVal = Math.floor(data.main.temp)
@@ -66,41 +92,33 @@ const populateUpdatedData = (data, location) => {
   let windDirection = data.wind.deg
   let sunrise = getFormatedDate(data.sys.sunrise)('sunrise')
   let sunset = getFormatedDate(data.sys.sunset)('sunset')
-  let replacableValues = document.querySelector('.visual .description .icon').classList.value.split(' ').length > 1
-    ? document.querySelector('.visual .description .icon').classList.value.split(' ').splice(1).join(' ')
-    : ''
-  document.querySelector('.weather').removeAttribute('hidden')
-  document.querySelector('.place .location').textContent = currentLocation + ' , ' + countryCode
-  document.querySelector('.place .date').textContent = dataLastUpdated
-  document.querySelector('.nature').textContent = currentWeatherNature
-  if (replacableValues.length > 0) {
-    document.querySelector('.visual .description .icon').classList.replace(replacableValues, getIconClass(currentWeatherId))
-  } else {
-    document.querySelector('.visual .description .icon').classList.add(getIconClass(currentWeatherId))
-  }
-  document.querySelector('.description .temprature .value').textContent = currentTempVal
-  document.querySelector('.description .temprature .scale').textContent = '°F'
-  document.querySelector('.humidity').textContent = 'Humidity : ' + humidity
-  document.querySelector('.wind ').textContent = 'Wind: ' + windVal + ' ' + windScale + ' ' + windDirection + '°'
-  document.querySelector('.sunrise').textContent = 'Sunrise: ' + sunrise
-  document.querySelector('.sunset').textContent = 'Sunset: ' + sunset
-  document.querySelector('.loader').setAttribute('hidden', true)
+  card.querySelector('.place .location').textContent = currentLocation + ' , ' + countryCode
+  card.querySelector('.place .date').textContent = dataLastUpdatedFormated
+  card.querySelector('.nature').textContent = currentWeatherNature
+  card.querySelector('.visual .description .icon').classList.add(getIconClass(currentWeatherId))
+  card.querySelector('.description .temprature .value').textContent = currentTempVal
+  card.querySelector('.humidity').textContent = humidity
+  card.querySelector('.wind ').textContent = windVal + ' ' + windScale + ' ' + Math.round(windDirection) + '°'
+  card.querySelector('.sunrise').textContent = sunrise
+  card.querySelector('.sunset').textContent = sunset
+  document.querySelector('.app-loader').setAttribute('hidden', true)
 }
 
-const fetchForecast = location => {
-  console.log('<fetchForecast> location = ', location)
-  const URL = 'http://api.openweathermap.org/data/2.5/weather?q=' + location + '&APPID=' + APPKEY + '&units=metric&units=imperial'
+app.fetchForecast = (lat, lng) => {
+  console.log('<app.js, fetchForecast> lat = ', lat, ' lng = ', lng)
+  const URL = 'http://api.openweathermap.org/data/2.5/weather?lat=' + lat + '&lon=' + lng + '&APPID=' + APPKEY + '&units=metric&units=imperial'
   const request = new XMLHttpRequest()
   request.onreadystatechange = () => {
     if (request.readyState === XMLHttpRequest.DONE && request.status === 200) {
       let response = JSON.parse(request.response)
-      console.log('response = ', response)
-      populateUpdatedData(response, location)
+      console.log('<app.js, fetchForecast> response = ', response)
+      populateUpdatedData(response)
     } else {
-      populateUpdatedData(initialWeatherForecast, initialWeatherForecast.name)
+      populateUpdatedData(initialWeatherForecast)
     }
   }
   request.open('GET', URL)
+  document.querySelector('.app-loader').removeAttribute('hidden')
   request.send()
 }
 
@@ -112,7 +130,4 @@ const fetchData = () => {
   newLoc.focus()
 }
 
-const updateForeacst = () => {
-  var currentDate =  new Date().get
-}
-populateData(initialWeatherForecast)
+populateUpdatedData(initialWeatherForecast)
