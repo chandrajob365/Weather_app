@@ -5,6 +5,8 @@
     <meta http-equiv="X-UA-Compatible" content='IE=edge'>
     <meta name='viewport' content="width=device-width, initial-scale=1.0">
     <link rel='stylesheet' type='text/css' href='./css/main.css'>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAWc4-9-Dy6nJ_1hDUcQjX1_ZxhwzIsVw4&libraries=places"
+        async defer></script>
   </head>
   <body>
     <header class='headLine'>
@@ -17,10 +19,17 @@
     </header>
     <main class='main'>
       <div class='InputBtnGrp'>
-        <input type='text' id='newLoc'>
-        <input type='button' value='Get' onClick='fetchData()'></button>
+        <span class='loc-icon'></span>
+        <input type='text' id='locSearch'
+          class='newLocIpField'
+          placeholder='Enter Location...'
+          onFocus='initAutocomplete()'/>
+        <div class='input-seprator'></div>
+        <button id='detect-location-icon' class='detect-location-icon' onClick='getCurrentGeoLocation()'></button>
       </div>
-      <div class='weather'>
+      <div class='weatherTemplate weather' hidden>
+        <div class="city-key" hidden></div>
+        <div class="card-last-updated" hidden></div>
         <div class='place'>
           <div class='location'></div>
           <div class='date'></div>
@@ -52,105 +61,12 @@
           </div>
         </div>
 
-        <div class='forecast'>
-
-          <div class='oneDay'>
-            <div class='date'></div>
-            <div class='icon'></div>
-            <div class='temp'>
-              <div class='temp-max'>
-                <span class='value'></span>
-                <span class='scale'>1°F</span>
-              </div>
-              <div class='temp-min'>
-                <span class='value'></span>
-                <span class='scale'>2°F</span>
-              </div>
-            </div>
-          </div>
-
-          <div class='oneDay'>
-            <div class='date'></div>
-            <div class='icon'></div>
-            <div class='temp'>
-              <div class='temp-max'>
-                <span class='value'></span>
-                <span class='scale'>3°F</span>
-              </div>
-              <div class='temp-min'>
-                <span class='value'></span>
-                <span class='scale'>4°F</span>
-              </div>
-            </div>
-          </div>
-
-          <div class='oneDay'>
-            <div class='date'></div>
-            <div class='icon'></div>
-            <div class='temp'>
-              <div class='temp-max'>
-                <span class='value'></span>
-                <span class='scale'>°F</span>
-              </div>
-              <div class='temp-min'>
-                <span class='value'></span>
-                <span class='scale'>°F</span>
-              </div>
-            </div>
-          </div>
-
-          <div class='oneDay'>
-            <div class='date'></div>
-            <div class='icon'></div>
-            <div class='temp'>
-              <div class='temp-max'>
-                <span class='value'></span>
-                <span class='scale'>°F</span>
-              </div>
-              <div class='temp-min'>
-                <span class='value'></span>
-                <span class='scale'>°F</span>
-              </div>
-            </div>
-          </div>
-
-          <div class='oneDay'>
-            <div class='date'></div>
-            <div class='icon'></div>
-            <div class='temp'>
-              <div class='temp-max'>
-                <span class='value'></span>
-                <span class='scale'>°F</span>
-              </div>
-              <div class='temp-min'>
-                <span class='value'></span>
-                <span class='scale'>°F</span>
-              </div>
-            </div>
-          </div>
-
-          <div class='oneDay'>
-            <div class='date'></div>
-            <div class='icon'></div>
-            <div class='temp'>
-              <div class='temp-max'>
-                <span class='value'></span>
-                <span class='scale'>°F</span>
-              </div>
-              <div class='temp-min'>
-                <span class='value'></span>
-                <span class='scale'>°F</span>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </div>
+      </div> <!-- weather end -->
       </div>
     </main>
 
-    <div class="loader"></div>
-
+    <div class="app-loader"></div>
     <script src='./script/main.js'></script>
+    <script src='./script/location.js'></script>
   </body>
 </html>
