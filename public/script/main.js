@@ -130,7 +130,7 @@ app.saveSearchedLocation = (name, lat, lng) => {
 }
 
 const saveToIDB = obj => {
-  insertData({name: {fname: 'manish', lname: 'chandra'}})
+  insertData({name: {lat: lat, lng: lng}})
 }
 const fetchData = () => {
   let newLoc = document.getElementById('newLoc')
