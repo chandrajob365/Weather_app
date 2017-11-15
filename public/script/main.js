@@ -5,10 +5,11 @@ const app = {
   container: document.querySelector('.main'),
   weatherTemplate: document.querySelector('.weatherTemplate'),
   isLoading: true,
-  spinner: document.querySelector('.app-loader')
+  spinner: document.querySelector('.app-loader'),
+  searchedLocations: []
 }
 const initialWeatherForecast = {
-  name: 'Bangalore',
+  key: 'Bangalore',
   dt: 1510291800,
   weather: [{id: 801, main: 'Cloudy'}],
   main: {
@@ -80,7 +81,7 @@ const populateUpdatedData = (data) => {
     if (dataLastUpdated < cardLastUpdated) return
   }
   cardLastUpdatedElem.textContent = data.dt
-  let currentLocation = data.name
+  let currentLocation = data.key
   let countryCode = data.sys.country
   let dataLastUpdatedFormated = getFormatedDate(data.dt)('lastUpdated')
   let currentWeatherNature = data.weather[0].main
@@ -105,13 +106,14 @@ const populateUpdatedData = (data) => {
 }
 
 app.fetchForecast = (lat, lng) => {
-  console.log('<app.js, fetchForecast> lat = ', lat, ' lng = ', lng)
+  console.log('<app.js, fetchForecast> name = ', name, 'lat = ', lat, ' lng = ', lng)
   const URL = 'http://api.openweathermap.org/data/2.5/weather?lat=' + lat + '&lon=' + lng + '&APPID=' + APPKEY + '&units=metric&units=imperial'
   const request = new XMLHttpRequest()
   request.onreadystatechange = () => {
     if (request.readyState === XMLHttpRequest.DONE && request.status === 200) {
       let response = JSON.parse(request.response)
       console.log('<app.js, fetchForecast> response = ', response)
+      app.saveSearchedLocation(response.name, lat, lng)
       populateUpdatedData(response)
     } else {
       populateUpdatedData(initialWeatherForecast)
@@ -122,6 +124,14 @@ app.fetchForecast = (lat, lng) => {
   request.send()
 }
 
+app.saveSearchedLocation = (name, lat, lng) => {
+  app.searchedLocations.push({name: [lat, lng]})
+  saveToIDB({name: [lat, lng]})
+}
+
+const saveToIDB = obj => {
+  insertData({name: {fname: 'manish', lname: 'chandra'}})
+}
 const fetchData = () => {
   let newLoc = document.getElementById('newLoc')
   console.log('newLoc.length = ', newLoc.value.length)

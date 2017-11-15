@@ -5,6 +5,7 @@ const locator = {
 }
 
 function initAutocomplete () {
+  console.log('Entry initAutocomplete')
   let input = document.getElementById('locSearch')
   let options = {
     type: ['(cities)']
@@ -15,7 +16,10 @@ function initAutocomplete () {
 
 const fillInAddress = () => {
   let place = locator.autocomplete.getPlace()
+  console.log('place = ', place)
+  console.log('place.name = ', place.name)
   let lat = place.geometry.location.lat()
+  console.log('lat = ', lat)
   let lng = place.geometry.location.lng()
   document.getElementById('locSearch').value = ''
   app.fetchForecast(lat, lng)
@@ -31,6 +35,7 @@ function getCurrentGeoLocation () {
 }
 
 const geoSuccess = position => {
+  console.log('<geoSuccess> lat = ', position.coords.latitude, ' longitude = ', position.coords.longitude)
   locator.iconShouldVisible = true
   toggleLocationDetectorIcon()
   locator.icon.blur()
@@ -38,6 +43,7 @@ const geoSuccess = position => {
 }
 
 const geoError = () => {
+  console.log('<geoError> Error')
   locator.iconShouldVisible = true
   toggleLocationDetectorIcon()
   locator.icon.blur()
