@@ -126,11 +126,11 @@ app.fetchForecast = (lat, lng) => {
 
 app.saveSearchedLocation = (name, lat, lng) => {
   app.searchedLocations.push({name: [lat, lng]})
-  saveToIDB({name: [lat, lng]})
+  saveToIDB({name: {lat: lat, lng: lng}})
 }
 
 const saveToIDB = obj => {
-  insertData({name: {lat: lat, lng: lng}})
+  insertData(obj)
 }
 const fetchData = () => {
   let newLoc = document.getElementById('newLoc')
