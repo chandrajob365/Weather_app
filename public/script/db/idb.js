@@ -13,6 +13,6 @@ db.onupgradeneeded = function (event) {
 function insertData (name) {
   store.transaction.oncomplete = event => {
     var locationObjectStore = db.transaction('locations', 'readwrite').objectStore('locations')
-    locationObjectStore.add(name.fname, name.lname)
+    locationObjectStore.add(name.lat, name.lng)
   }
 }
