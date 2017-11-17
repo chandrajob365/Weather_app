@@ -7,47 +7,26 @@ const app = {
   isLoading: true,
   spinner: document.querySelector('.app-loader'),
   searchedLocations: [],
-  availableLocationList: {}
+  dbPromise: {},
+  availabelLocations: []
 }
 
-// const initialWeatherForecast = {
-//   name: 'Bangalore',
-//   dt: 1510291800,
-//   weather: [{id: 801, main: 'Cloudy'}],
-//   main: {
-//     temp: 23,
-//     scale: '°F',
-//     humidity: 55
-//   },
-//   wind: {
-//     speed: 30,
-//     scale: 'mps',
-//     deg: '43'
-//   },
-//   sys: {
-//     country: 'IN',
-//     sunrise: 1510274776,
-//     sunset: 1510316436
-//   }
-// }
-
 document.addEventListener('DOMContentLoaded', function () {
-  const dbPromise = idb.open('weatherApp', 1, upgradeDB => {
+  app.dbPromise = idb.open('weatherApp', 1, upgradeDB => {
     upgradeDB.createObjectStore('locations')
   })
-  getAllLocations(locationsObjs => {
-    if (locationsObjs.length > 0) {
-      locationsObjs.forEach(location => {
-        app.availableLocationList.push(location)
-        app.fetchForecast(location.lat, location.lng)
-      })
-    } else {
-      getCurrentGeoLocation ()
-    }
-  })
+  idbKeyVal.getAllLocations()
+    .then(locationsObjs => {
+      if (locationsObjs.length > 0) {
+        locationsObjs.forEach(location => {
+          app.availabelLocations.push({lat: location.lat, lng: location.lng})
+          app.fetchForecast(location.lat, location.lng)
+        })
+      } else {
+        getCurrentGeoLocation ()
+      }
+    })
 })
-
-
 
 const getFormatedDate = epoch => {
   var dt = new Date(epoch * 1000)
@@ -83,6 +62,7 @@ const getIconClass = weatherId => {
 const populateUpdatedData = (data) => {
   console.log('dataLastUpdated = ', getFormatedDate(data.dt)('lastUpdated'), ' data.dt = ', data.dt)
   let dataLastUpdated = data.dt
+  console.log('<populateUpdatedData> data.name = ', data.name)
   let card = app.availableCards[data.name]
   if (!card) {
     card = app.weatherTemplate.cloneNode(true)
@@ -118,7 +98,7 @@ const populateUpdatedData = (data) => {
   card.querySelector('.visual .description .icon').classList.add(getIconClass(currentWeatherId))
   card.querySelector('.description .temprature .value').textContent = currentTempVal
   card.querySelector('.humidity').textContent = humidity
-  card.querySelector('.wind ').textContent = windVal + ' ' + windScale + ' ' + Math.round(windDirection) + '°'
+  card.querySelector('.wind ').textContent = windVal + ' ' + windScale + ' ' + (!isNaN(windDirection) ? Math.round(windDirection) + '°' : '')
   card.querySelector('.sunrise').textContent = sunrise
   card.querySelector('.sunset').textContent = sunset
   document.querySelector('.app-loader').setAttribute('hidden', true)
@@ -126,16 +106,13 @@ const populateUpdatedData = (data) => {
 
 app.fetchForecast = (lat, lng) => {
   console.log('<app.js, fetchForecast> lat = ', lat, ' lng = ', lng)
-  const URL = 'http://api.openweathermap.org/data/2.5/weather?lat=' + lat + '&lon=' + lng + '&APPID=' + APPKEY + '&units=metric&units=imperial'
+  const URL = 'https://api.openweathermap.org/data/2.5/weather?lat=' + lat + '&lon=' + lng + '&APPID=' + APPKEY + '&units=metric&units=imperial'
   const request = new XMLHttpRequest()
   request.onreadystatechange = () => {
     if (request.readyState === XMLHttpRequest.DONE && request.status === 200) {
       let response = JSON.parse(request.response)
       console.log('<app.js, fetchForecast> response = ', response)
-      app.saveSearchedLocation(lat, lng)
       populateUpdatedData(response)
-    } else {
-      populateUpdatedData(initialWeatherForecast)
     }
   }
   request.open('GET', URL)
@@ -143,20 +120,11 @@ app.fetchForecast = (lat, lng) => {
   request.send()
 }
 
-// app.saveSearchedLocation = (lat, lng) => {
-//   app.searchedLocations.push({lat: lat, lng: lng})
-//   saveToIDB({lat: lat, lng: lng})
-// }
-
-const saveToIDB = location => {
-  addLocations(location)
+const getRefreshedData = () => {
+  console.log('<getRefreshedData> Entry')
+  if (app.availabelLocations.length > 0) {
+    app.availabelLocations.forEach(location => {
+      app.fetchForecast(location.lat, location.lng)
+    })
+  }
 }
-const fetchData = () => {
-  let newLoc = document.getElementById('newLoc')
-  console.log('newLoc.length = ', newLoc.value.length)
-  if (newLoc.value.length > 0) fetchForecast(newLoc.value)
-  newLoc.value = ''
-  newLoc.focus()
-}
-
-populateUpdatedData(initialWeatherForecast)
