@@ -14,7 +14,7 @@
         <span class='value'>Weather App</span>
       </div>
       <div class='btn'>
-        <button class='refreshBtn'></button>
+        <button class='refreshBtn' onClick='getRefreshedData()'></button>
       </div>
     </header>
     <main class='main'>
@@ -52,21 +52,17 @@
               <span class='scale'>mps</span>
               <span class='direction'></span>
             </div>
-            <!-- <div class='rain'>
-              <span class='value'></span>
-              <span class='scale'>mm</span>
-            </div> -->
             <div class='sunrise'></div>
             <div class='sunset'></div>
           </div>
         </div>
 
       </div> <!-- weather end -->
-      </div>
+      <div class="app-loader"></div>
     </main>
 
-    <div class="app-loader"></div>
-    <script src='./script/lib/db.js'></script>
+
+    <script src='./script/lib/idb.js'></script>
     <script src='./script/main.js'></script>
     <script src='./script/db/dbController.js'></script>
     <script src='./script/location.js'></script>
