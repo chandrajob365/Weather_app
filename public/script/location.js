@@ -22,7 +22,7 @@ const fillInAddress = () => {
     console.log('<fillInAddress> Call to fetchForecast...........')
     let lat = place.geometry.location.lat()
     let lng = place.geometry.location.lng()
-    chkAndInsertInIDB(lat, lng)
+    // chkAndInsertInIDB(lat, lng)
     app.fetchForecast(lat, lng)
   }
   document.getElementById('locSearch').value = ''
@@ -40,6 +40,7 @@ function getCurrentGeoLocation () {
 }
 
 const geoSuccess = position => {
+  console.log('<geoSuccess> position = ', position)
   console.log('<geoSuccess> lat = ', position.coords.latitude, ' longitude = ', position.coords.longitude)
   let lat = position.coords.latitude
   let lng = position.coords.longitude
@@ -47,7 +48,7 @@ const geoSuccess = position => {
   toggleLocationDetectorIcon()
   locator.icon.blur()
   app.fetchForecast(position.coords.latitude, position.coords.longitude)
-  chkAndInsertInIDB(lat, lng)
+  // chkAndInsertInIDB(lat, lng)
 }
 
 const geoError = () => {

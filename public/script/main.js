@@ -113,6 +113,7 @@ app.fetchForecast = (lat, lng) => {
       let response = JSON.parse(request.response)
       console.log('<app.js, fetchForecast> response = ', response)
       populateUpdatedData(response)
+      chkAndInsertInIDB(response.id, lat, lng)
     }
   }
   request.open('GET', URL)

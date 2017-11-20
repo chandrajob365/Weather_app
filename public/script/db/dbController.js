@@ -1,4 +1,3 @@
-
 const idbKeyVal = {
   set (key, val) {
     return app.dbPromise.then(db => {
@@ -22,12 +21,12 @@ const idbKeyVal = {
   }
 }
 
-const chkAndInsertInIDB = (lat, lng) => {
-  idbKeyVal.get(lat)
+const chkAndInsertInIDB = (id, lat, lng) => {
+  idbKeyVal.get(id)
     .then(obj => {
       if (!obj) {
         app.availabelLocations.push({lat: lat, lng: lng})
-        idbKeyVal.set(lat, {lat: lat, lng: lng})
+        idbKeyVal.set(id, {lat: lat, lng: lng})
       }
     })
 }
