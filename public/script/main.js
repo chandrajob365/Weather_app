@@ -1,16 +1,3 @@
-window.onload = () => {
-  console.log('Inside window load event...')
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js', {scope: '/'})
-      .then(reg => {
-        console.log('serviceWorker Registration success. Scope is : ', reg.scope)
-      })
-      .catch(err => {
-        console.log('error in serviceWorker Registration: ', err)
-      })
-  }
-}
-console.log('Hello World')
 const APPKEY = '6d0e3f929541145218c53f14a59c7aa2'
 const GPLACEAPPKEY = 'AIzaSyAWc4-9-Dy6nJ_1hDUcQjX1_ZxhwzIsVw4'
 const app = {
@@ -24,13 +11,44 @@ const app = {
   availabelLocations: [],
   noDataIndicator: document.querySelector('.no-data'),
   emptyIDB: true,
-  alert: document.querySelector('.alert')
+  alert: document.querySelector('.alert'),
+  geoError: document.querySelector('.geo-error')
 }
 
-const toggleNoData = () => {
+const errorStrings = {
+  PERMISSION_DENIED: 'Permision Denied',
+  POSITION_UNAVAILABLE: 'Network Error',
+  TIMEOUT: 'Timeout, Retry'
+}
+
+const warningStrings = {
+  NO_INTERNET: 'No Connection'
+}
+
+const updateNotification = (errorString, notificationClass) => {
+  app.alert.style.display = 'flex'
+  resetAlert()
+  app.alert.classList.add(notificationClass)
+  app.geoError.textContent = ''
+  app.geoError.textContent = errorString
+  setTimeout(clearError, 8000)
+}
+
+const resetAlert = () => {
+  app.alert.classList.remove('error')
+  app.alert.classList.contains('warning')
+}
+// Removes alert box after 8 seconds
+const clearError = () => {
+  app.geoError.textContent = ''
+  resetAlert()
+  app.alert.style.display = 'none'
+}
+const toggleNoData = respString => {
   if (app.emptyIDB) {
     app.noDataIndicator.removeAttribute('hidden')
-    app.noDataIndicator.textContent = 'Please use above to fetch weather'
+    app.noDataIndicator.textContent = ''
+    app.noDataIndicator.textContent = respString
   } else {
     app.noDataIndicator.textContent = ''
     app.noDataIndicator.setAttribute('hidden', true)
@@ -53,7 +71,7 @@ document.addEventListener('DOMContentLoaded', function () {
         })
       } else {
         console.log('[MAIN, DOMContentLoaded] No data in IDB')
-        toggleNoData()
+        toggleNoData('Please use above to fetch weather')
       }
     })
 })
@@ -137,7 +155,7 @@ const populateUpdatedData = (data) => {
 }
 
 app.fetchForecast = (lat, lng) => {
-  // console.log('<app.js, fetchForecast> lat = ', lat, ' lng = ', lng)
+  console.log('<app.js, fetchForecast> lat = ', lat, ' lng = ', lng)
   app.emptyIDB = false
   toggleNoData()
   document.querySelector('.app-loader').removeAttribute('hidden')
@@ -164,15 +182,25 @@ const fetchCachedData = URL => {
 const makeNetworkReq = (URL, lat, lng) => {
   const request = new XMLHttpRequest()
   request.onreadystatechange = () => {
-    if (request.readyState === XMLHttpRequest.DONE && request.status === 200) {
-      let response = JSON.parse(request.response)
-      // console.log('<app.js, fetchForecast> response = ', response)
-      populateUpdatedData(response)
-      chkAndInsertInIDB(response.id, lat, lng)
+    console.log('[MAIN], request = ', request)
+    if (request.readyState === XMLHttpRequest.DONE) {
+      if (request.status === 200) {
+        let response = JSON.parse(request.response)
+        // console.log('<app.js, fetchForecast> response = ', response)
+        populateUpdatedData(response)
+        chkAndInsertInIDB(response.id, lat, lng)
+      } else {
+        updateNotification(warningStrings.NO_INTERNET, 'warning')
+      }
     }
   }
+  request.onerror = () => {
+    console.log('[MAIN, makeNetworkReq] Error')
+    updateNotification(warningStrings.NO_INTERNET, 'warning')
+    document.querySelector('.app-loader').setAttribute('hidden', true)
+    toggleNoData('No Network')
+  }
   request.open('GET', URL)
-  // document.querySelector('.app-loader').removeAttribute('hidden')
   request.send()
 }
 
@@ -183,4 +211,23 @@ const getRefreshedData = () => {
       app.fetchForecast(location.lat, location.lng)
     })
   }
+}
+
+window.onload = () => {
+  console.log('Inside window load event...')
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js', {scope: '/'})
+      .then(reg => {
+        console.log('serviceWorker Registration success. Scope is : ', reg.scope)
+      })
+      .catch(err => {
+        console.log('error in serviceWorker Registration: ', err)
+      })
+  }
+  navigator.serviceWorker.addEventListener('message', event => {
+    console.log('[MAIN] client recieved msg : ', event.data)
+    if (event.data === 'NETWORK_ERROR') {
+      updateNotification(warning.NO_INTERNET, 'warning')
+    }
+  })
 }

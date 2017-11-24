@@ -15,36 +15,46 @@ function initAutocomplete () {
 }
 
 const fillInAddress = () => {
-  let place = locator.autocomplete.getPlace()
-  console.log('place = ', place)
-  console.log('place.location = ', place.geometry.location)
-  if (place && place.geometry.location) {
-    console.log('<fillInAddress> Call to fetchForecast...........')
-    let lat = place.geometry.location.lat()
-    let lng = place.geometry.location.lng()
-    // chkAndInsertInIDB(lat, lng)
-    app.fetchForecast(lat, lng)
-  }
+  app.alert.style.display = 'none'
+  app.geoError.textContent = ''
+   // if (window.navigator.online) {
+    let place = locator.autocomplete.getPlace() // Get request is being made with new Query from text box
+    console.log('place = ', place)
+    console.log('place.location = ', place.geometry.location)
+    if (place && place.geometry && place.geometry.location) {
+      console.log('<fillInAddress> Call to fetchForecast...........')
+      let lat = place.geometry.location.lat()
+      let lng = place.geometry.location.lng()
+      // chkAndInsertInIDB(lat, lng)
+      app.fetchForecast(lat, lng)
+    }
+  //} else {
+    //handleNoNetwork()
+  //}
   document.getElementById('locSearch').value = ''
   document.getElementById('locSearch').focus()
 }
 
+const handleNoNetwork = () => {
+  updateNotification(warningStrings.NO_INTERNET, 'warning')
+  document.querySelector('.app-loader').setAttribute('hidden', true)
+  toggleNoData('No Network')
+}
 function getCurrentGeoLocation () {
   app.alert.style.display = 'none'
+  app.geoError.textContent = ''
   toggleLocationDetectorIcon()
   if ('geolocation' in navigator) {
     console.log('Inside GEOLOC call.............')
     navigator.geolocation.getCurrentPosition(geoSuccess, geoError, {timeout: 5000})
   } else {
-    updateGeoErrorStatus('Unsupported feature')
+    updateNotification('Unsupported feature')
   }
 }
 
 const geoSuccess = position => {
   console.log('<geoSuccess> position = ', position)
   console.log('<geoSuccess> lat = ', position.coords.latitude, ' longitude = ', position.coords.longitude)
-  let lat = position.coords.latitude
-  let lng = position.coords.longitude
   locator.iconShouldVisible = true
   toggleLocationDetectorIcon()
   locator.icon.blur()
@@ -60,21 +70,18 @@ const geoError = err => {
 }
 
 const handleErrorCase = err => {
-  switch (err.code) {
-    case 1: updateGeoErrorStatus('Permision Denied')
-      break
-    case 2: updateGeoErrorStatus('Network Error')
-      break
-    case 3: updateGeoErrorStatus('Timeout, Retry')
-      break
+  if (app.geoError.textContent.length === 0) {
+    switch (err.code) {
+      case 1: updateNotification(errorStrings.PERMISSION_DENIED, 'error')
+        break
+      case 2: updateNotification(errorStrings.POSITION_UNAVAILABLE, 'error')
+        break
+      case 3: updateNotification(errorStrings.TIMEOUT, 'error')
+        break
+    }
   }
 }
 
-const updateGeoErrorStatus = errorString => {
-  app.alert.style.display = 'flex'
-  document.querySelector('.geo-error').textContent = ''
-  document.querySelector('.geo-error').textContent = errorString
-}
 const toggleLocationDetectorIcon = () => {
   locator.iconShouldVisible
   ? toggle('detect-location-loader', 'detect-location-icon')

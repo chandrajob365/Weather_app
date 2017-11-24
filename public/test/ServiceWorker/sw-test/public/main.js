@@ -5,6 +5,9 @@ if ('serviceWorker' in navigator) {
    }).catch(err => {
      console.log('Registration failed with ' + err)
    })
+   navigator.serviceWorker.addEventListener('message', event => {
+     console.log('[MAIN] client recieved msg : ', event.data)
+   })
 }
 const imageLoad = imgJSON => {
   return new Promise ((resolve, reject) => {

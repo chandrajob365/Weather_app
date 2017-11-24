@@ -1,13 +1,14 @@
-const cacheName = 'Weather_appShell_cache_V1'
+const appCacheName = 'Weather_appShell_cache_V1'
 const dataCacheName = 'Weather_Data_cache_V1'
 const openWeatherMap = 'https://api.openweathermap.org'
 const googleApi = 'https://maps.googleapis.com'
-const apiLinks = [openWeatherMap, googleApi]
+const geoStatic = 'https://csi.gstatic.com/'
+const apiLinks = [openWeatherMap, googleApi, geoStatic]
 console.log('[SERVICEWORKER, STARTUP] this = ', this)
 this.addEventListener('install', event => {
   console.log('[SERVICEWORKER, INSTALL] ')
   event.waitUntil(
-    caches.open(cacheName).then(cache => {
+    caches.open(appCacheName).then(cache => {
       return cache.addAll([
         '/css/main.css',
         '/images/ic_refresh_white_24px.svg',
@@ -55,16 +56,19 @@ const isDataLink = url => {
   }
   return false
 }
-
+// event.port[0].postMessage('NETWORK_ERROR')
 const fetchAndCacheDataLinks = event => {
-
   event.respondWith(
     caches.open(dataCacheName).then(cache => {
       console.log('[SERVICEWORKER, fetchAndCacheDataLinks] cache = ', cache)
       // if req and resp key val pair is already in cache then return from cache else make nw call
       return event.request.url.indexOf('openweathermap') === -1
-       ? fetch(event.request.url, {mode: 'no-cors'}).then(response => saveInCache(event, response, cache))
-       : fetch(event.request.url).then(response => saveInCache(event, response, cache))
+       ? fetch(event.request.url, {mode: 'no-cors'})
+          .then(response => saveInCache(event, response, cache))
+          .catch(err => event.port[0].postMessage('NETWORK_ERROR'))
+       : fetch(event.request.url)
+          .then(response => saveInCache(event, response, cache))
+          .catch(err => event.port[0].postMessage('NETWORK_ERROR'))
     })
   )
 }
@@ -76,8 +80,12 @@ const saveInCache = (event, response, cache) => {
 }
 const fetchAppShell = event => {
   event.respondWith(
-    caches.match(event.request).then(response => {
-      return response || fetch(event.request)
+    caches.match(event.request).then(res => {
+      return res || fetch(event.request).then(response => {
+        return caches.open(appCacheName)
+         .then(cache => saveInCache(event, response, cache))
+         .catch(err => event.port[0].postMessage('NETWORK_ERROR'))
+      })
     })
   )
 }
@@ -89,7 +97,7 @@ this.addEventListener('activate', event => {
       caches.keys().then(keyList => {
         console.log('[SERVICEWORKER, ACTIVATE] KeyList = ', keyList)
         return Promise.all(keyList.map(key => {
-          if (key !== cacheName && key !== dataCacheName) {
+          if (key !== appCacheName && key !== dataCacheName) {
             console.log('[SERVICEWORKER, ACTIVATE] Removing Old Cache : ', key)
             return caches.delete(key)
           }
