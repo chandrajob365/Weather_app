@@ -1,6 +1,13 @@
+const cacheName = 'Weather_appShell_cache_V1'
+const dataCacheName = 'Weather_Data_cache_V1'
+const openWeatherMap = 'https://api.openweathermap.org'
+const googleApi = 'https://maps.googleapis.com'
+const apiLinks = [openWeatherMap, googleApi]
+console.log('[SERVICEWORKER, STARTUP] this = ', this)
 this.addEventListener('install', event => {
+  console.log('[SERVICEWORKER, INSTALL] ')
   event.waitUntil(
-    caches.open('Weather_app_cache_V1').then(cache => {
+    caches.open(cacheName).then(cache => {
       return cache.addAll([
         '/css/main.css',
         '/images/ic_refresh_white_24px.svg',
@@ -20,6 +27,7 @@ this.addEventListener('install', event => {
         '/script/db/dbController.js',
         '/script/location.js',
         '/script/main.js',
+        '/favicon.ico',
         '/index.html'
       ])
     })
@@ -27,23 +35,66 @@ this.addEventListener('install', event => {
 })
 
 this.addEventListener('fetch', event => {
-  console.log('<Fetch event > event.request.url = ', event.request.url)
+  console.log('[SERVICEWORKER, FETCH] event.request.url = ', event.request.url)
+  if (isDataLink(event.request.url)) {
+    console.log('[SERVICEWORKER, FETCH] Its a data Link : ', event.request.url)
+    fetchAndCacheDataLinks(event)
+   //  .catch(err => {
+   //   console.log('error in Fetching URL : ', event.request.url, '\n', ' Error : ', err)
+   // })
+  } else {
+    fetchAppShell(event)
+  }
+})
+
+const isDataLink = url => {
+  for (let i = 0; i < apiLinks.length; i++) {
+    let res = url.indexOf(apiLinks[i])
+    console.log('[SERVICEWORKER, isDataLink] res = ', res)
+    if (res !== -1) return true
+  }
+  return false
+}
+
+const fetchAndCacheDataLinks = event => {
+
   event.respondWith(
-    caches.match(event.request).then(res => {
-      // console.log('<Fetch event > response = ', response)
-      return res || fetch(event.request).then(response => {
-      //   console.log('<From inside response of fetch> event.request.url = ', event.request.url)
-      //   console.log('<From inside response of fetch> response = ', response)
-        return caches.open('Weather_app_cache_V1').then(cache => {
-          cache.put(event.request, response.clone())
-          return response
-        })
-      }).catch(() => {
-        // add falback case
-        // return some file from cache as fallback measure
-        // (cached current weather and all other weathers)
-        console.log('Resource didn\'t matched anything and network is also not there')
-      })
+    caches.open(dataCacheName).then(cache => {
+      console.log('[SERVICEWORKER, fetchAndCacheDataLinks] cache = ', cache)
+      // if req and resp key val pair is already in cache then return from cache else make nw call
+      return event.request.url.indexOf('openweathermap') === -1
+       ? fetch(event.request.url, {mode: 'no-cors'}).then(response => saveInCache(event, response, cache))
+       : fetch(event.request.url).then(response => saveInCache(event, response, cache))
     })
+  )
+}
+
+const saveInCache = (event, response, cache) => {
+  cache.put(event.request.url, response.clone())
+  console.log('[SERVICEWORKER, saveInCache] response = ', response)
+  return response
+}
+const fetchAppShell = event => {
+  event.respondWith(
+    caches.match(event.request).then(response => {
+      return response || fetch(event.request)
+    })
+  )
+}
+
+this.addEventListener('activate', event => {
+  console.log('[SERVICEWORKER] ACTIVATE..')
+  event.waitUntil(
+    caches.open(
+      caches.keys().then(keyList => {
+        console.log('[SERVICEWORKER, ACTIVATE] KeyList = ', keyList)
+        return Promise.all(keyList.map(key => {
+          if (key !== cacheName && key !== dataCacheName) {
+            console.log('[SERVICEWORKER, ACTIVATE] Removing Old Cache : ', key)
+            return caches.delete(key)
+          }
+        }))
+      })
+    )
   )
 })
