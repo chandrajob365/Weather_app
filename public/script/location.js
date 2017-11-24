@@ -30,12 +30,13 @@ const fillInAddress = () => {
 }
 
 function getCurrentGeoLocation () {
+  app.alert.style.display = 'none'
   toggleLocationDetectorIcon()
   if ('geolocation' in navigator) {
     console.log('Inside GEOLOC call.............')
-    navigator.geolocation.getCurrentPosition(geoSuccess, geoError)
+    navigator.geolocation.getCurrentPosition(geoSuccess, geoError, {timeout: 5000})
   } else {
-    // Do Something
+    updateGeoErrorStatus('Unsupported feature')
   }
 }
 
@@ -48,16 +49,32 @@ const geoSuccess = position => {
   toggleLocationDetectorIcon()
   locator.icon.blur()
   app.fetchForecast(position.coords.latitude, position.coords.longitude)
-  // chkAndInsertInIDB(lat, lng)
 }
 
-const geoError = () => {
-  console.log('<geoError> Error')
+const geoError = err => {
+  console.log('<geoError> Error : ', err.code)
   locator.iconShouldVisible = true
   toggleLocationDetectorIcon()
   locator.icon.blur()
+  handleErrorCase(err)
 }
 
+const handleErrorCase = err => {
+  switch (err.code) {
+    case 1: updateGeoErrorStatus('Permision Denied')
+      break
+    case 2: updateGeoErrorStatus('Network Error')
+      break
+    case 3: updateGeoErrorStatus('Timeout, Retry')
+      break
+  }
+}
+
+const updateGeoErrorStatus = errorString => {
+  app.alert.style.display = 'flex'
+  document.querySelector('.geo-error').textContent = ''
+  document.querySelector('.geo-error').textContent = errorString
+}
 const toggleLocationDetectorIcon = () => {
   locator.iconShouldVisible
   ? toggle('detect-location-loader', 'detect-location-icon')
