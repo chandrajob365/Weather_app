@@ -1,7 +1,10 @@
 self.addEventListener('install', event => {
+  // debugger;
   console.log('Install event fired.....')
+  // self.skipWaiting()
+  console.log('TEST........')
   event.waitUntil(
-    caches.open('v1').then( cache => {
+    caches.open('v1').then(cache => {
       console.log('cache = ', cache)
       return cache.addAll(
         [
@@ -15,16 +18,32 @@ self.addEventListener('install', event => {
           '/image-list.js'
         ]
       )
-    }).catch(err => console.log('error : ', err))
+    })
+    .then(self.skipWaiting())
+    .catch(err => console.log('error : ', err))
   )
 })
 
 self.addEventListener('fetch', event => {
-  console.log('<Inside Fetch event of SW.js> event.request.url = ', event.request.url)
+  // debugger;
+  // console.log('<Inside Fetch event of.... SW.js> event.request.url = ', event.request.url)
   event.respondWith(
-    caches.match(event.request).then(response => {
-      console.log('<Inside Fetch event of SW.js> response = ', response)
-      return response || fetch(event.request)
+    caches.match(event.request).then(resp => {
+      // console.log('<Inside Fetch event of... SW.js> resp = ', resp)
+      return resp || fetch(event.request).then(response => {
+        return caches.open('v1').then(cache => {
+          cache.put(event.request, response.clone())
+          console.log('<after cache.put > event.request.url = ', event.request.url)
+          console.log('<Response after cache.put > response = ', response)
+          return response
+        })
+      })
     })
   )
+})
+
+self.addEventListener('activate', event => {
+  console.log('<ACTIVATE ......> Entry')
+  console.log('HELLO WORLD')
+  event.waitUntil(self.clients.claim())
 })

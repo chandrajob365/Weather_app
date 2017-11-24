@@ -13,9 +13,9 @@ const imageLoad = imgJSON => {
     request.responseType = 'blob'
     request.onload = () => {
       if (request.status === 200) {
-        let arrayResponse = [];
-        arrayResponse[0] = request.response;
-        arrayResponse[1] = imgJSON;
+        let arrayResponse = []
+        arrayResponse[0] = request.response
+        arrayResponse[1] = imgJSON
         resolve(arrayResponse)
       } else {
         reject(Error('Image didn\'t load successfully error code:' + request.statusText))
