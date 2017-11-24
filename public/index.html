@@ -17,6 +17,10 @@
         <button class='refreshBtn' onClick='getRefreshedData()'></button>
       </div>
     </header>
+    <div class="alert">
+      <div class="geo-error"></div>
+      <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+    </div>
     <main class='main'>
       <div class='InputBtnGrp'>
         <span class='loc-icon'></span>
@@ -58,7 +62,9 @@
         </div>
 
       </div> <!-- weather end -->
-      <div class="app-loader"></div>
+      <div class="app-loader" hidden></div>
+      <div class="no-data" hidden></div>
+
     </main>
 
 

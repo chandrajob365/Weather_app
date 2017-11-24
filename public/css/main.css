@@ -209,6 +209,31 @@ align-self: center;
   height: 80px;
   animation: spin 2s linear infinite;
 }
+.no-data {
+  margin-top: 30%;
+}
+.alert {
+  display: none;
+  align-self:center;
+  justify-content:space-between;
+  width: 40%;
+  padding: 5px;
+  background-color: #f44336;
+}
+.geo-error{
+  /*display: flex;*/
+  color: white;
+}
+.closebtn {
+  align-self: center;
+  margin-left: 15px;
+  color: white;
+  line-height: 20px;
+  cursor: pointer;
+}
+.closebtn:hover{
+  color: black;
+}
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
@@ -263,7 +288,4 @@ align-self: center;
   .oneday {
     width: auto;
   }
-  /*.stats {
-  padding: 30px;
-  }*/
 }
