@@ -1,3 +1,16 @@
+window.onload = () => {
+  console.log('Inside window load event...')
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js', {scope: '/'})
+      .then(reg => {
+        console.log('serviceWorker Registration success. Scope is : ', reg.scope)
+      })
+      .catch(err => {
+        console.log('error in serviceWorker Registration: ', err)
+      })
+  }
+}
+console.log('Hello World')
 const APPKEY = '6d0e3f929541145218c53f14a59c7aa2'
 const GPLACEAPPKEY = 'AIzaSyAWc4-9-Dy6nJ_1hDUcQjX1_ZxhwzIsVw4'
 const app = {
@@ -8,10 +21,26 @@ const app = {
   spinner: document.querySelector('.app-loader'),
   searchedLocations: [],
   dbPromise: {},
-  availabelLocations: []
+  availabelLocations: [],
+  noDataIndicator: document.querySelector('.no-data'),
+  emptyIDB: true,
+  alert: document.querySelector('.alert')
 }
 
+const toggleNoData = () => {
+  if (app.emptyIDB) {
+    app.noDataIndicator.removeAttribute('hidden')
+    app.noDataIndicator.textContent = 'Please use above to fetch weather'
+  } else {
+    app.noDataIndicator.textContent = ''
+    app.noDataIndicator.setAttribute('hidden', true)
+  }
+}
+// 'Please use above to fetch some data'
 document.addEventListener('DOMContentLoaded', function () {
+  // document.querySelector('.alert').style.display = 'flex'
+  console.log('[MAIN] error ====== ', document.querySelector('.error'))
+  // document.querySelector('.error').innerText = 'Network Error!!!! '
   app.dbPromise = idb.open('weatherApp', 1, upgradeDB => {
     upgradeDB.createObjectStore('locations')
   })
@@ -23,21 +52,22 @@ document.addEventListener('DOMContentLoaded', function () {
           app.fetchForecast(location.lat, location.lng)
         })
       } else {
-        getCurrentGeoLocation ()
+        console.log('[MAIN, DOMContentLoaded] No data in IDB')
+        toggleNoData()
       }
     })
 })
 
 const getFormatedDate = epoch => {
   var dt = new Date(epoch * 1000)
-  console.log('epoch = ', epoch, ' dt = ', dt)
+  // console.log('epoch = ', epoch, ' dt = ', dt)
   return (format) => {
     return converter(dt.toString(), format)
   }
 }
 
 const converter = (dt, format) => {
-  console.log('dt = ', dt)
+  // console.log('dt = ', dt)
   switch (format) {
     case 'lastUpdated':
       return dt.slice(0, dt.length - 15)
@@ -49,7 +79,7 @@ const converter = (dt, format) => {
 }
 
 const getIconClass = weatherId => {
-  console.log('<getIconClass> currentWeatherNature = ', weatherId)
+  // console.log('<getIconClass> currentWeatherNature = ', weatherId)
   if (weatherId >= 200 && weatherId <= 232) return 'thunderstorms'
   if (weatherId >= 300 && weatherId <= 321) return 'scattered-showers'
   if (weatherId >= 500 && weatherId <= 531) return 'rain'
@@ -60,9 +90,11 @@ const getIconClass = weatherId => {
 }
 
 const populateUpdatedData = (data) => {
-  console.log('dataLastUpdated = ', getFormatedDate(data.dt)('lastUpdated'), ' data.dt = ', data.dt)
+  console.log('[MAIN, populateUpdatedData] data = ', data)
+  // document.querySelector('.no-data').removeAttribute('hidden', true)
+  // console.log('dataLastUpdated = ', getFormatedDate(data.dt)('lastUpdated'), ' data.dt = ', data.dt)
   let dataLastUpdated = data.dt
-  console.log('<populateUpdatedData> data.name = ', data.name)
+  // console.log('<populateUpdatedData> data.name = ', data.name)
   let card = app.availableCards[data.name]
   if (!card) {
     card = app.weatherTemplate.cloneNode(true)
@@ -105,24 +137,47 @@ const populateUpdatedData = (data) => {
 }
 
 app.fetchForecast = (lat, lng) => {
-  console.log('<app.js, fetchForecast> lat = ', lat, ' lng = ', lng)
+  // console.log('<app.js, fetchForecast> lat = ', lat, ' lng = ', lng)
+  app.emptyIDB = false
+  toggleNoData()
+  document.querySelector('.app-loader').removeAttribute('hidden')
   const URL = 'https://api.openweathermap.org/data/2.5/weather?lat=' + lat + '&lon=' + lng + '&APPID=' + APPKEY + '&units=metric&units=imperial'
+  if ('caches' in window) {
+    fetchCachedData(URL)
+  }
+  makeNetworkReq(URL, lat, lng)
+}
+
+const fetchCachedData = URL => {
+  caches.match(URL).then(response => {
+    console.log('[MAIN, fetchForecast] response = ', response)
+    if (response) {
+      console.log('.............................')
+      response.json().then((json) => {
+        console.log('[MAIN] JSON ......... : ', json)
+        populateUpdatedData(json)
+      })
+    }
+  })
+}
+
+const makeNetworkReq = (URL, lat, lng) => {
   const request = new XMLHttpRequest()
   request.onreadystatechange = () => {
     if (request.readyState === XMLHttpRequest.DONE && request.status === 200) {
       let response = JSON.parse(request.response)
-      console.log('<app.js, fetchForecast> response = ', response)
+      // console.log('<app.js, fetchForecast> response = ', response)
       populateUpdatedData(response)
       chkAndInsertInIDB(response.id, lat, lng)
     }
   }
   request.open('GET', URL)
-  document.querySelector('.app-loader').removeAttribute('hidden')
+  // document.querySelector('.app-loader').removeAttribute('hidden')
   request.send()
 }
 
 const getRefreshedData = () => {
-  console.log('<getRefreshedData> Entry')
+  // console.log('<getRefreshedData> Entry')
   if (app.availabelLocations.length > 0) {
     app.availabelLocations.forEach(location => {
       app.fetchForecast(location.lat, location.lng)
